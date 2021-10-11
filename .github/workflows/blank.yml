@@ -1,0 +1,66 @@
+name: Visualization
+
+on: workflow_dispatch
+
+jobs:
+
+  build-backend:
+    strategy:
+      matrix:
+        node: [10, 12, 14]
+    runs-on: ubuntu-latest
+    steps:
+    - run: sleep 2
+    - run: echo "Building backend for ${{ matrix.node }}"
+    - run: sleep 2
+    
+  build-frontend:
+    strategy:
+      matrix:
+        node: [12, 14]
+    runs-on: ubuntu-latest
+    steps:
+    - run: sleep 2
+    - run: echo "Building frontend for ${{ matrix.node }}"
+    - run: sleep 2
+    
+  integration-tests:
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+    - run: sleep 2
+    - run: echo "Integration tests..."
+    - run: sleep 2
+    
+  staging-deploy:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+    - run: sleep 2
+    - run: echo "Staging deploy succeeded!"
+    
+  security-tests:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+    - run: sleep 2
+    - run: echo "Security testing succeeded!"
+    
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: staging-deploy
+    steps:
+    - run: sleep 2
+    - run: echo "Security testing succeeded!"
+    
+  prod-deploy:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, security-tests]
+
+    environment:
+      name: production
+      url: 'https://www.github.com'
+    steps:
+    - run: sleep 10
+    - run: echo "Deploying"
+    - run: sleep 10
